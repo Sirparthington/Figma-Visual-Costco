@@ -14,7 +14,7 @@ that match your computer.
 
 1. [What you need before you start](#1-what-you-need-before-you-start)
 2. [Install Python](#2-install-python)
-3. [Put the files in a folder](#3-put-the-files-in-a-folder)
+3. [Download the code (clone the repo)](#3-download-the-code-clone-the-repo)
 4. [Open a terminal in that folder](#4-open-a-terminal-in-that-folder)
 5. [Set up the Python environment](#5-set-up-the-python-environment)
 6. [Install the required packages](#6-install-the-required-packages)
@@ -37,9 +37,10 @@ that match your computer.
   you don't need to do anything with Figma).
 - **Internet access** to the portal at `https://sportal-npd.ct-costco.com/`. If your company
   requires a VPN to reach that site, connect to it first.
-- The two files that came with this guide:
-  - `sauce_visual_figma_test.py` — the test.
-  - `requirements.txt` — the list of software the test needs.
+- The code from this repository (you'll download it in Step 3):
+  <https://github.com/Sirparthington/Figma-Visual-Costco>
+  It contains `sauce_visual_figma_test.py` (the test) and `requirements.txt` (the list of
+  software the test needs).
 
 A "terminal" is just a text window where you type commands. On **Mac** it's called
 **Terminal**; on **Windows** it's called **PowerShell**. Don't worry — this guide tells you
@@ -80,36 +81,72 @@ If you see something like `Python 3.10.6` (any 3.8 or higher is fine), you're se
 
 ---
 
-## 3. Put the files in a folder
+## 3. Download the code (clone the repo)
 
-Create a folder somewhere easy to find (for example, on your Desktop) and put both files
-inside it:
+The code lives in a GitHub repository. "Cloning" just means downloading a copy to your
+computer. You'll do this with a tool called **git**.
 
-- `sauce_visual_figma_test.py`
-- `requirements.txt`
+### Check if you have git
 
-Name the folder something simple like `SauceVisualTest`. Keep both files together in this
-same folder.
+Open a terminal and type:
+
+**Mac:**
+```bash
+git --version
+```
+
+**Windows:**
+```powershell
+git --version
+```
+
+If you see a version number (like `git version 2.42.0`), you're set. If you get an error that
+git isn't found, install it:
+
+- **Mac:** a pop-up may appear offering to install the developer tools — click **Install**.
+  Otherwise download from <https://git-scm.com/download/mac>.
+- **Windows:** download and run the installer from <https://git-scm.com/download/win>, accepting
+  the default options. Close and reopen your terminal afterward.
+
+### Clone the repository
+
+First move to a place to keep it (your Desktop is a good choice), then clone:
+
+**Mac:**
+```bash
+cd ~/Desktop
+git clone https://github.com/Sirparthington/Figma-Visual-Costco.git
+```
+
+**Windows:**
+```powershell
+cd $HOME\Desktop
+git clone https://github.com/Sirparthington/Figma-Visual-Costco.git
+```
+
+This creates a folder called `Figma-Visual-Costco` on your Desktop with all the files inside.
+
+> **No git and can't install it?** You can instead download the code as a ZIP: open
+> <https://github.com/Sirparthington/Figma-Visual-Costco> in a browser, click the green
+> **Code** button, choose **Download ZIP**, then unzip it. The rest of the steps are the same.
 
 ---
 
 ## 4. Open a terminal in that folder
 
-You want your terminal "pointed at" the folder from Step 3.
+You want your terminal "pointed at" the `Figma-Visual-Costco` folder you just downloaded.
 
-### Mac
+If you cloned it in the step above, your terminal is already close — just move into the folder:
 
-1. Open the **Terminal** app (press `Cmd + Space`, type `Terminal`, press Enter).
-2. Type `cd ` (the letters c, d, and a space) — **do not press Enter yet**.
-3. Drag the `SauceVisualTest` folder from Finder onto the Terminal window. It will fill in the
-   folder location for you.
-4. Press **Enter**.
+**Mac:**
+```bash
+cd ~/Desktop/Figma-Visual-Costco
+```
 
-### Windows
-
-1. Open **File Explorer** and go into the `SauceVisualTest` folder.
-2. Click in the address bar at the top, type `powershell`, and press **Enter**.
-   A PowerShell window opens already pointed at that folder.
+**Windows:**
+```powershell
+cd $HOME\Desktop\Figma-Visual-Costco
+```
 
 To confirm you're in the right place, list the files:
 
@@ -124,7 +161,7 @@ dir
 ```
 
 You should see `sauce_visual_figma_test.py` and `requirements.txt` listed. If you don't, you're
-in the wrong folder — repeat this step.
+in the wrong folder — check the folder name and try `cd` again.
 
 ---
 
