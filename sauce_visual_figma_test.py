@@ -86,6 +86,7 @@ SNAPSHOT_NAME = "Home Page"
 TEST_NAME = "SVP-POC"
 SUITE_NAME = "SVP-homePage"
 BUILD_BRANCH = "Demo"  # must match the branch the Figma design was exported under
+Project = "Sustainability Vendor Portal"
 
 FIGMA_BASELINE_OVERRIDE = BaselineOverride(
     browser="FIGMA",                 # server enum value (not in SDK enum)
@@ -220,7 +221,7 @@ def main() -> None:
     client = SauceLabsVisual()  # reads SAUCE_USERNAME / SAUCE_ACCESS_KEY / SAUCE_REGION
 
     # Build associated with all snapshots. Branch must match the Figma export.
-    client.create_build(name="SVP-POC", branch=BUILD_BRANCH)
+    client.create_build(name="SVP-POC", project=PROJECT, branch=BUILD_BRANCH)
 
     driver = build_driver()
     try:
