@@ -34,11 +34,11 @@ SAUCE_URL = _ONDEMAND[SAUCE_REGION]
 SAUCE_USERNAME = os.environ["SAUCE_USERNAME"]
 SAUCE_ACCESS_KEY = os.environ["SAUCE_ACCESS_KEY"]
 
-SNAPSHOT_NAME = "Card"
-TEST_NAME = "Card"
-SUITE_NAME = "Card"
-BUILD_BRANCH = "Costco"
-PROJECT = "Sauce Demo Project"
+SNAPSHOT_NAME = "Home Page"
+TEST_NAME = "SVP-POC"
+SUITE_NAME = "SVP-homePage"
+BUILD_BRANCH = "Demo"  # must match the branch the Figma design was exported under
+Project = "Sustainability Vendor Portal"
 
 FIGMA_BASELINE_OVERRIDE = BaselineOverride(
     browser="FIGMA",
