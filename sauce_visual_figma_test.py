@@ -58,7 +58,7 @@ FIGMA_BASELINE_OVERRIDE = BaselineOverride(
 #
 # Preset options (least -> most sensitive): LOW, BALANCED, HIGH.
 DIFFING_METHOD = DiffingMethod.BALANCED
-DIFFING_SENSITIVITY = DiffingMethodSensitivity.LOW
+DIFFING_SENSITIVITY = DiffingMethodSensitivity.HIGH
  
 # Optional: fine-grained tolerances. Uncomment and tune if LOW still over-flags.
 # Larger numbers = more tolerant (fewer diffs). minChangeSize is in pixels and
