@@ -1,3 +1,5 @@
+
+Sauce visual figma snapshot · PY
 #!/usr/bin/env python3
 """
 Sauce Labs Visual snapshot test with a Figma design as the baseline.
@@ -16,14 +18,17 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from saucelabs_visual.client import SauceLabsVisual
-from saucelabs_visual.typing import BaselineOverride
-
+from saucelabs_visual.typing import (
+    BaselineOverride,
+    DiffingMethod,
+    DiffingMethodSensitivity,
+    DiffingMethodTolerance,
+)
 # --- Target application ---
 APP_URL = "https://sportal-npd.ct-costco.com/"
 APP_USERNAME = "genericQAacct_1"
 APP_PASSWORD = "water_Saver-vend!06.26"
 POST_LOGIN_WAIT_SECONDS = 5
-
 SAUCE_REGION = os.environ.get("SAUCE_REGION", "us-west-1")
 _ONDEMAND = {
     "us-west-1": "https://ondemand.us-west-1.saucelabs.com/wd/hub",
@@ -33,21 +38,41 @@ _ONDEMAND = {
 SAUCE_URL = _ONDEMAND[SAUCE_REGION]
 SAUCE_USERNAME = os.environ["SAUCE_USERNAME"]
 SAUCE_ACCESS_KEY = os.environ["SAUCE_ACCESS_KEY"]
-
-SNAPSHOT_NAME = "Home Page"
-TEST_NAME = "SVP-POC"
-SUITE_NAME = "SVP-homePage"
-BUILD_BRANCH = "Demo"  # must match the branch the Figma design was exported under
-Project = "Sustainability Vendor Portal"
-
+SNAPSHOT_NAME = “Home Page”
+TEST_NAME = “SVP-POC”
+SUITE_NAME = “SVP-homePage”
+BUILD_BRANCH = “Demo”  # must match the branch the Figma design was exported under
+Project = “Sustainability Vendor Portal”
 FIGMA_BASELINE_OVERRIDE = BaselineOverride(
     browser="FIGMA",
     operatingSystem="UNKNOWN",
     operatingSystemVersion=None,
     device=None,
 )
-
-
+ 
+# --- Diffing sensitivity -----------------------------------------------------
+# When comparing a live browser render against a Figma-exported baseline,
+# anti-aliasing, sub-pixel positioning, and tiny color shifts make almost
+# everything look "changed". Lowering the sensitivity tells the Balanced engine
+# to ignore that rendering noise.
+#
+# Preset options (least -> most sensitive): LOW, BALANCED, HIGH.
+DIFFING_METHOD = DiffingMethod.BALANCED
+DIFFING_SENSITIVITY = DiffingMethodSensitivity.LOW
+ 
+# Optional: fine-grained tolerances. Uncomment and tune if LOW still over-flags.
+# Larger numbers = more tolerant (fewer diffs). minChangeSize is in pixels and
+# ignores changed clusters smaller than that.
+# DIFFING_TOLERANCE = DiffingMethodTolerance(
+#     antiAliasing=1.0,
+#     brightness=1.0,
+#     color=1.0,
+#     minChangeSize=4,
+# )
+DIFFING_TOLERANCE = None
+# -----------------------------------------------------------------------------
+ 
+ 
 def build_driver() -> webdriver.Remote:
     options = webdriver.ChromeOptions()
     options.browser_version = "latest"
@@ -67,8 +92,6 @@ def build_driver() -> webdriver.Remote:
     driver = webdriver.Remote(command_executor=SAUCE_URL, options=options)
     _set_viewport(driver, 1440, 1024)
     return driver
-
-
 def _set_viewport(driver, width: int, height: int) -> None:
     """Resize the window so the *viewport* (inner) is exactly width x height."""
     driver.set_window_size(width, height)
@@ -78,16 +101,12 @@ def _set_viewport(driver, width: int, height: int) -> None:
         width, height,
     )
     driver.set_window_size(outer_w, outer_h)
-
-
 LOGIN_USERNAME_SELECTOR = (
     By.CSS_SELECTOR,
     "input[name='pf.username'], input[name='username'], input[id*='user' i], input[type='email'], input[type='text']",
 )
 LOGIN_PASSWORD_SELECTOR = (By.CSS_SELECTOR, "input[type='password']")
 LOGIN_SUBMIT_SELECTOR = (By.ID, "signOnButton")
-
-
 def _first_interactable(driver, locator):
     for el in driver.find_elements(*locator):
         try:
@@ -96,8 +115,6 @@ def _first_interactable(driver, locator):
         except Exception:
             continue
     return None
-
-
 def dump_form_elements(driver) -> None:
     js = """
     const out = [];
@@ -115,8 +132,6 @@ def dump_form_elements(driver) -> None:
     print("---- FORM ELEMENTS ON PAGE ----")
     print(driver.execute_script(js))
     print("--------------------------------")
-
-
 def login(driver: webdriver.Remote) -> None:
     wait = WebDriverWait(driver, 30)
     driver.get(APP_URL)
@@ -148,8 +163,6 @@ def login(driver: webdriver.Remote) -> None:
             password.send_keys(Keys.RETURN)
     wait.until(EC.staleness_of(password))
     time.sleep(POST_LOGIN_WAIT_SECONDS)
-
-
 def main() -> None:
     client = SauceLabsVisual()
     client.create_build(name="SVP-POC", project=PROJECT, branch=BUILD_BRANCH)
@@ -162,11 +175,15 @@ def main() -> None:
             test_name=TEST_NAME,
             suite_name=SUITE_NAME,
             baseline_override=FIGMA_BASELINE_OVERRIDE,
+            # Lower the diffing sensitivity so rendering noise isn't flagged.
+            diffing_method=DIFFING_METHOD,
+            diffing_method_sensitivity=DIFFING_SENSITIVITY,
+            diffing_method_tolerance=DIFFING_TOLERANCE,
         )
     finally:
         driver.quit()
         client.finish_build()
-
-
 if __name__ == "__main__":
     main()
+ 
+
