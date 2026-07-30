@@ -90,7 +90,7 @@ def build_driver() -> webdriver.Remote:
         },
     )
     driver = webdriver.Remote(command_executor=SAUCE_URL, options=options)
-    _set_viewport(driver, 1440, 1024)
+    _set_viewport(driver, 1440, 1727)
     return driver
 def _set_viewport(driver, width: int, height: int) -> None:
     """Resize the window so the *viewport* (inner) is exactly width x height."""
