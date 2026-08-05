@@ -94,3 +94,110 @@ def build_driver() -> webdriver.Remote:
     driver = webdriver.Remote(command_executor=SAUCE_URL, options=options)
     _set_viewport(driver, 1440, 1600)
     return driver
+
+
+def _set_viewport(driver, width: int, height: int) -> None:
+    """Resize the window so the *viewport* (inner) is exactly width x height."""
+    driver.set_window_size(width, height)
+    outer_w, outer_h = driver.execute_script(
+        "return [window.outerWidth  - window.innerWidth  + arguments[0],"
+        "        window.outerHeight - window.innerHeight + arguments[1]];",
+        width, height,
+    )
+    driver.set_window_size(outer_w, outer_h)
+
+
+LOGIN_USERNAME_SELECTOR = (
+    By.CSS_SELECTOR,
+    "input[name='pf.username'], input[name='username'], input[id*='user' i], input[type='email'], input[type='text']",
+)
+LOGIN_PASSWORD_SELECTOR = (By.CSS_SELECTOR, "input[type='password']")
+LOGIN_SUBMIT_SELECTOR = (By.ID, "signOnButton")
+
+
+def _first_interactable(driver, locator):
+    for el in driver.find_elements(*locator):
+        try:
+            if el.is_displayed() and el.is_enabled():
+                return el
+        except Exception:
+            continue
+    return None
+
+
+def dump_form_elements(driver) -> None:
+    js = """
+    const out = [];
+    for (const el of document.querySelectorAll('input, button, a[role=button]')) {
+      const r = el.getBoundingClientRect();
+      out.push({
+        tag: el.tagName, type: el.type || '', id: el.id || '',
+        name: el.getAttribute('name') || '', placeholder: el.placeholder || '',
+        text: (el.innerText || el.value || '').trim().slice(0, 40),
+        visible: !!(r.width && r.height),
+      });
+    }
+    return JSON.stringify(out, null, 2);
+    """
+    print("---- FORM ELEMENTS ON PAGE ----")
+    print(driver.execute_script(js))
+    print("--------------------------------")
+
+
+def login(driver: webdriver.Remote) -> None:
+    wait = WebDriverWait(driver, 30)
+    driver.get(APP_URL)
+    wait.until(EC.presence_of_element_located(LOGIN_PASSWORD_SELECTOR))
+    if os.environ.get("DEBUG_DUMP") == "1":
+        dump_form_elements(driver)
+    username = _first_interactable(driver, LOGIN_USERNAME_SELECTOR)
+    password = _first_interactable(driver, LOGIN_PASSWORD_SELECTOR)
+    if username is None or password is None:
+        dump_form_elements(driver)
+        raise RuntimeError(
+            "Could not find a visible username/password field. "
+            "See the dump above and update LOGIN_USERNAME_SELECTOR / LOGIN_PASSWORD_SELECTOR."
+        )
+    username.click()
+    username.send_keys(APP_USERNAME)
+    password.click()
+    password.send_keys(APP_PASSWORD)
+    submit = _first_interactable(driver, LOGIN_SUBMIT_SELECTOR)
+    if submit is not None:
+        try:
+            submit.click()
+        except Exception:
+            driver.execute_script("arguments[0].click();", submit)
+    else:
+        try:
+            driver.execute_script("if (typeof postOk === 'function') { postOk(); }")
+        except Exception:
+            password.send_keys(Keys.RETURN)
+    wait.until(EC.staleness_of(password))
+    time.sleep(POST_LOGIN_WAIT_SECONDS)
+
+
+def main() -> None:
+    client = SauceLabsVisual()
+    client.create_build(name="SVP-POC", project=PROJECT, branch=BUILD_BRANCH)
+    driver = build_driver()
+    try:
+        login(driver)
+        client.create_snapshot_from_webdriver(
+            name=SNAPSHOT_NAME,
+            driver=driver,
+            test_name=TEST_NAME,
+            suite_name=SUITE_NAME,
+            baseline_override=FIGMA_BASELINE_OVERRIDE,
+            # Lower the diffing sensitivity so rendering noise isn't flagged.
+            diffing_method=DIFFING_METHOD,
+            diffing_method_sensitivity=DIFFING_SENSITIVITY,
+            diffing_method_tolerance=DIFFING_TOLERANCE,
+        )
+    finally:
+        driver.quit()
+        client.finish_build()
+
+
+if __name__ == "__main__":
+    main()
