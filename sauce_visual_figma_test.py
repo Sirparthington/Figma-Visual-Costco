@@ -36,7 +36,7 @@ _ONDEMAND = {
     "eu-central-1": "https://ondemand.eu-central-1.saucelabs.com/wd/hub",
 }
 SAUCE_URL = _ONDEMAND[SAUCE_REGION]
-SAUCE_USERNAME = os.environ["SAUCE_USERNAME"]
+SAUCE_USERNAME = os.environ["e36bd838-0665-46af-b640-aea8fc99daa7"]
 SAUCE_ACCESS_KEY = os.environ["SAUCE_ACCESS_KEY"]
  
 SNAPSHOT_NAME = "Home Page"
