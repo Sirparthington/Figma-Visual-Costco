@@ -1,5 +1,3 @@
-
-Sauce visual figma snapshot · PY
 #!/usr/bin/env python3
 """
 Sauce Labs Visual snapshot test with a Figma design as the baseline.
@@ -24,11 +22,13 @@ from saucelabs_visual.typing import (
     DiffingMethodSensitivity,
     DiffingMethodTolerance,
 )
+ 
 # --- Target application ---
 APP_URL = "https://sportal-npd.ct-costco.com/"
 APP_USERNAME = "genericQAacct_1"
 APP_PASSWORD = "water_Saver-vend!06.26"
 POST_LOGIN_WAIT_SECONDS = 5
+ 
 SAUCE_REGION = os.environ.get("SAUCE_REGION", "us-west-1")
 _ONDEMAND = {
     "us-west-1": "https://ondemand.us-west-1.saucelabs.com/wd/hub",
@@ -38,11 +38,13 @@ _ONDEMAND = {
 SAUCE_URL = _ONDEMAND[SAUCE_REGION]
 SAUCE_USERNAME = os.environ["SAUCE_USERNAME"]
 SAUCE_ACCESS_KEY = os.environ["SAUCE_ACCESS_KEY"]
-SNAPSHOT_NAME = “Home Page”
-TEST_NAME = “SVP-POC”
-SUITE_NAME = “SVP-homePage”
-BUILD_BRANCH = “Demo”  # must match the branch the Figma design was exported under
-Project = “Sustainability Vendor Portal”
+ 
+SNAPSHOT_NAME = "Home Page"
+TEST_NAME = "SVP-POC"
+SUITE_NAME = "SVP-homePage"
+BUILD_BRANCH = "Demo"  # must match the branch the Figma design was exported under
+PROJECT = "Sustainability Vendor Portal"
+ 
 FIGMA_BASELINE_OVERRIDE = BaselineOverride(
     browser="FIGMA",
     operatingSystem="UNKNOWN",
@@ -92,6 +94,8 @@ def build_driver() -> webdriver.Remote:
     driver = webdriver.Remote(command_executor=SAUCE_URL, options=options)
     _set_viewport(driver, 1440, 1727)
     return driver
+ 
+ 
 def _set_viewport(driver, width: int, height: int) -> None:
     """Resize the window so the *viewport* (inner) is exactly width x height."""
     driver.set_window_size(width, height)
@@ -101,12 +105,16 @@ def _set_viewport(driver, width: int, height: int) -> None:
         width, height,
     )
     driver.set_window_size(outer_w, outer_h)
+ 
+ 
 LOGIN_USERNAME_SELECTOR = (
     By.CSS_SELECTOR,
     "input[name='pf.username'], input[name='username'], input[id*='user' i], input[type='email'], input[type='text']",
 )
 LOGIN_PASSWORD_SELECTOR = (By.CSS_SELECTOR, "input[type='password']")
 LOGIN_SUBMIT_SELECTOR = (By.ID, "signOnButton")
+ 
+ 
 def _first_interactable(driver, locator):
     for el in driver.find_elements(*locator):
         try:
@@ -115,6 +123,8 @@ def _first_interactable(driver, locator):
         except Exception:
             continue
     return None
+ 
+ 
 def dump_form_elements(driver) -> None:
     js = """
     const out = [];
@@ -132,6 +142,8 @@ def dump_form_elements(driver) -> None:
     print("---- FORM ELEMENTS ON PAGE ----")
     print(driver.execute_script(js))
     print("--------------------------------")
+ 
+ 
 def login(driver: webdriver.Remote) -> None:
     wait = WebDriverWait(driver, 30)
     driver.get(APP_URL)
@@ -163,6 +175,8 @@ def login(driver: webdriver.Remote) -> None:
             password.send_keys(Keys.RETURN)
     wait.until(EC.staleness_of(password))
     time.sleep(POST_LOGIN_WAIT_SECONDS)
+ 
+ 
 def main() -> None:
     client = SauceLabsVisual()
     client.create_build(name="SVP-POC", project=PROJECT, branch=BUILD_BRANCH)
@@ -183,7 +197,7 @@ def main() -> None:
     finally:
         driver.quit()
         client.finish_build()
+ 
+ 
 if __name__ == "__main__":
     main()
- 
-
