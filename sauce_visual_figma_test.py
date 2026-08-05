@@ -82,8 +82,8 @@ def build_driver() -> webdriver.Remote:
     options.set_capability(
         "sauce:options",
         {
-            "username": sso-costco-rmohandoss,
-            "accessKey": e36bd838-0665-46af-b640-aea8fc99daa7,
+            "username": "sso-costco-rmohandoss",
+            "accessKey": "accessKey": "e36bd838-0665-46af-b640-aea8fc99daa7",
             "build": "SVP-POC Figma Baseline",
             "name": f"{SUITE_NAME} - {SNAPSHOT_NAME}",
             # VM screen must be >= the target window. 1440x1024 is NOT a valid
