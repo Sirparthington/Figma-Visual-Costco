@@ -88,11 +88,11 @@ def build_driver() -> webdriver.Remote:
             "name": f"{SUITE_NAME} - {SNAPSHOT_NAME}",
             # VM screen must be >= the target window. 1440x1024 is NOT a valid
             # Sauce screenResolution, so pick a larger supported one to fit it.
-            "screenResolution": "1920x1200",
+            "screenResolution": "2560x1600",
         },
     )
     driver = webdriver.Remote(command_executor=SAUCE_URL, options=options)
-    _set_viewport(driver, 1440, 1727)
+    _set_viewport(driver, 1440, 1600)
     return driver
  
  
