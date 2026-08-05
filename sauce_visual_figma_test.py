@@ -36,8 +36,8 @@ _ONDEMAND = {
     "eu-central-1": "https://ondemand.eu-central-1.saucelabs.com/wd/hub",
 }
 SAUCE_URL = _ONDEMAND[SAUCE_REGION]
-SAUCE_USERNAME = os.environ["sso-costco-rmohandoss"]
-SAUCE_ACCESS_KEY = os.environ["e36bd838-0665-46af-b640-aea8fc99daa7"]
+SAUCE_USERNAME = os.environ["SAUCE_USERNAME"]
+SAUCE_ACCESS_KEY = os.environ["SAUCE_ACCESS_KEY"]
  
 SNAPSHOT_NAME = "Home Page"
 TEST_NAME = "SVP-POC"
@@ -82,8 +82,8 @@ def build_driver() -> webdriver.Remote:
     options.set_capability(
         "sauce:options",
         {
-            "username": SAUCE_USERNAME,
-            "accessKey": SAUCE_ACCESS_KEY,
+            "username": sso-costco-rmohandoss,
+            "accessKey": e36bd838-0665-46af-b640-aea8fc99daa7,
             "build": "SVP-POC Figma Baseline",
             "name": f"{SUITE_NAME} - {SNAPSHOT_NAME}",
             # VM screen must be >= the target window. 1440x1024 is NOT a valid
